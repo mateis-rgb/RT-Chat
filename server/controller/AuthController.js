@@ -1,6 +1,6 @@
 const { connect, StreamClient } = require("getstream");
 const bcrypt = require("bcrypt");
-const StreamChat = require("steam-chat");
+const StreamChat = require("stream-chat");
 const crypto = require("crypto");
 
 const api_key = process.env.STREAM_API_KEY;
