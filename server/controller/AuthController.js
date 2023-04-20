@@ -1,14 +1,16 @@
-const { connect, StreamClient } = require("getstream");
+const { connect } = require("getstream");
 const bcrypt = require("bcrypt");
-const StreamChat = require("stream-chat");
+const StreamChat = require("stream-chat").StreamChat;
 const crypto = require("crypto");
+
+require("dotenv").config();
 
 const api_key = process.env.STREAM_API_KEY;
 const api_secret = process.env.STREAM_API_SECRET;
 const app_id = process.env.STREAM_APP_ID;
 
 
-const signup = async () => {
+const signup = async (req, res) => {
     try {
         const { fullName, username, password, phoneNumber } = req.body;
 
@@ -27,7 +29,7 @@ const signup = async () => {
             userId,
             hashedPassword,
             phoneNumber
-        })
+        });
     }
     catch (error) {
         console.log(error);
@@ -36,18 +38,21 @@ const signup = async () => {
     }    
 }
 
-const login = async () => {
+const login = async (req, res) => {
     try {
         const { username, password } = req.body;
 
         const serverClient = connect(api_key, api_secret, app_id);
         const client = StreamChat.getInstance(api_key, api_secret);
-        
+
         const { users } = await client.queryUsers({ name: username });
 
-        if (!users.length) return res.status(404).json({ message: 'User not found' });
+        if (!users.length) return res.status(400).json({ message: 'User not found' });
 
-        const success = await bcrypt.compare(password, users[0].hashedPassword);
+        console.log(password);
+        console.log(users[0])
+
+        const success = bcrypt.compareSync(password, users[0].hashedPassword);
 
         const token = serverClient.createUserToken(users[0].id);
 
@@ -60,14 +65,14 @@ const login = async () => {
             });
         }
         else {
-            res.status(500).json({ message: 'Incorrect password' });
+            res.status(500).json({ message: "Incorrect password" });
         }
+    }   
+    catch (err) {
+        console.log(err);
+
+        res.status(500).json({ message: err });
     }
-    catch (error) {
-        console.log(error);
-        
-        res.status(500).json({ message: error });
-    }    
 }
 
 
