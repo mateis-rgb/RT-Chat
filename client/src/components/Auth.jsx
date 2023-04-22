@@ -31,9 +31,9 @@ const Auth = () => {
 
 		const { fullName, username, password, phoneNumber, avatarURL } = form;
 
-		const URL = "http://localhost:5000/api/auth/";
+		const URL = "http://localhost:5000/api/auth";
 
-		const { data: { token, userId, hashedPassword } } = await axios.post(`${URL}${ isSignup ? 'signup' : 'login' }`, {
+		const { data: { token, userId, hashedPassword } } = await axios.post(`${URL}/${ isSignup ? 'signup' : 'login' }`, {
 			username,
 			password,
 			phoneNumber,
@@ -46,7 +46,7 @@ const Auth = () => {
 		cookies.set("fullName", fullName);
 		cookies.set("userId", userId);
 
-		if (!isSignup) {
+		if (isSignup) {
 			cookies.set("phoneNumber", phoneNumber);
 			cookies.set("avatarURL", avatarURL);
 			cookies.set("hashedPassword", hashedPassword);
